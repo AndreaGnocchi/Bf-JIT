@@ -12,6 +12,7 @@ typedef enum {
   OP_INPUT           = ',',
   OP_JUMP_IF_ZERO    = '[',
   OP_JUMP_IF_NONZERO = ']',
+  OP_CLEAR           = '0',
 } op_kind_t;
 
 typedef struct {
