@@ -16,6 +16,7 @@ bool jit_compile(ops_t ops, code_t* code) {
     op_t op = ops.items[i];
     DA_APPEND(&addrs, sb.count);
     switch (op.kind) {
+    case OP_INC: {
       SB_APPEND_CSTR(&sb, "\x80\x03"); // addb $imm8, (%rbx)
       DA_APPEND(&sb, op.operand & 0xFF);
     } break;
