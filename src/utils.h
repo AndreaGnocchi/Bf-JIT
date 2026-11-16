@@ -53,7 +53,7 @@ typedef struct {
   do {                                          \
     const char* s = (cstr);                     \
     size_t      l = strlen(s);                  \
-    DA_APPEND_MANY(sb, s, l)                    \
+    DA_APPEND_MANY(sb, s, l);                   \
   } while (0)
 
 bool read_entire_file(const char* file_path, string_builder_t* sb);
