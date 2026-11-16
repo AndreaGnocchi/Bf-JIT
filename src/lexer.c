@@ -2,7 +2,7 @@
 
 bool is_bf_cmd(char c) {
   const char* cmds = "+-<>,.[]";
-  return strchr(cmds, c) != NULL;
+  return c != '\0' && strchr(cmds, c) != NULL;
 }
 
 char lexer_next(lexer_t* l) {
