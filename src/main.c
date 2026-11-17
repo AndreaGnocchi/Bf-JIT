@@ -7,8 +7,6 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#define MAX_MEMORY (10 << 20)
-
 int main(int argc, char* argv[]) {
   if (argc < 2) {
     fprintf(stderr, "Not enough arguments. Usage: %s <file>\n", argv[0]);

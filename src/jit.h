@@ -4,6 +4,8 @@
 #include "opcode.h"
 #include <stdbool.h>
 
+#define MAX_MEMORY (10 << 20)
+
 typedef struct {
     size_t operand_byte_addr;
     size_t src_byte_addr;
