@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
+#include <unistd.h>
 
 #define MAX_MEMORY (10 << 20)
 
@@ -32,18 +33,41 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  void* memory = malloc(MAX_MEMORY);
-  if (!memory) {
-    fprintf(stderr, "Error: could not allocate %d bytes for the tape\n", MAX_MEMORY);
+  long   ps         = sysconf(_SC_PAGESIZE);
+  size_t total_size = MAX_MEMORY + (8 * ps);
+
+  void* base = mmap(NULL, total_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  if (base == MAP_FAILED) {
+    perror("mmap failed");
     free(ops.items);
     munmap(code.run, code.len);
     return 1;
   }
-  memset(memory, 0, MAX_MEMORY);
-  code.run(memory);
+
+  if (mprotect(base, 4 * ps, PROT_NONE) == -1) {
+    perror("mprotect guard 1 failed");
+    munmap(base, total_size);
+    free(ops.items);
+    munmap(code.run, code.len);
+    return 1;
+  }
   
+  void* end_guard = (char*)base + 4 * ps + MAX_MEMORY;
+  if (mprotect(end_guard, 4 * ps, PROT_NONE) == -1) {
+    perror("mprotect guard 2 failed");
+    munmap(base, total_size);
+    free(ops.items);
+    munmap(code.run, code.len);
+    return 1;
+  }
+  
+  void* memory = (char*)base + 4 * ps;
+  memset(memory, 0, MAX_MEMORY);
+  
+  code.run((char*)memory + MAX_MEMORY / 2);
+
+  munmap(base, total_size);  
   free(ops.items);
   munmap(code.run, code.len);
-  free(memory);
   return 0;
 }
