@@ -29,6 +29,7 @@ static inline bool write_temp_file(const char* content, char* path, size_t path_
 
   size_t len = strlen(content);
   bool   ok  = (write(fd, content, len) == (ssize_t)len);
+  close(fd);
   if (!ok)
     unlink(path);
 
