@@ -2,16 +2,17 @@
 #include "ir.h"
 #include "opcode.h"
 #include "utils.h"
+#include <stdbool.h>
 #include <sys/mman.h>
 #include <stdint.h>
 
 bool jit_compile(ops_t ops, code_t* code) {
+  bool             result      = true; 
   string_builder_t sb          = {0};
   backpatches_t    backpatches = {0};
   addr_t           addrs       = {0};
 
   SB_APPEND_CSTR(&sb, "\x53\x48\x89\xfb");
-  
   for (size_t i = 0; i < ops.count; ++i) {
     op_t op = ops.items[i];
     DA_APPEND(&addrs, sb.count);
@@ -22,11 +23,19 @@ bool jit_compile(ops_t ops, code_t* code) {
     } break;
       
     case OP_DEC: {
+      if (op.operand >= MAX_MEMORY / 2) {
+        result = false;
+      }
+      
       SB_APPEND_CSTR(&sb, "\x80\x2b"); // subb $imm8, (%rbx)
       DA_APPEND(&sb, op.operand & 0xFF);
     } break;
       
     case OP_LEFT: {
+      if (op.operand >= MAX_MEMORY / 2) {
+        result = false;
+      }
+      
       SB_APPEND_CSTR(&sb, "\x48\x81\xeb"); // subq $imm32, %rbx
       uint32_t operand = (uint32_t)op.operand;
       DA_APPEND_MANY(&sb, &operand, sizeof(operand));
@@ -114,8 +123,7 @@ bool jit_compile(ops_t ops, code_t* code) {
     int32_t     operand  = dst_addr - src_addr;
     memcpy(&sb.items[bp.operand_byte_addr], &operand, sizeof(operand));
   }
-
-  bool result = true;
+  
   code->len = sb.count;
   code->run = mmap(NULL, code->len, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   if (code->run == MAP_FAILED) {
