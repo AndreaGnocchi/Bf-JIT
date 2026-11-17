@@ -5,6 +5,7 @@ size_t test_passed = 0;
 
 static inline void run_all_tests(void) {
   run_all_utils_tests();
+  run_all_lexer_tests();
   run_all_ir_tests();
 }
 

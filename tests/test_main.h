@@ -38,6 +38,8 @@ static inline bool write_temp_file(const char* content, char* path, size_t path_
 
 // utils.c && utils.h
 void run_all_utils_tests(void);
+// lexer.c && lexer.h
+void run_all_lexer_tests(void);
 // ir.c & ir.h
 void run_all_ir_tests(void);
 
