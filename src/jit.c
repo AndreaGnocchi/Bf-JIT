@@ -18,6 +18,10 @@ bool jit_compile(ops_t ops, code_t* code) {
     DA_APPEND(&addrs, sb.count);
     switch (op.kind) {
     case OP_INC: {
+      if (op.operand >= MAX_MEMORY / 2) {
+        result = false;
+      }
+      
       SB_APPEND_CSTR(&sb, "\x80\x03"); // addb $imm8, (%rbx)
       DA_APPEND(&sb, op.operand & 0xFF);
     } break;
@@ -42,6 +46,10 @@ bool jit_compile(ops_t ops, code_t* code) {
     } break;
       
     case OP_RIGHT: {
+      if (op.operand >= MAX_MEMORY / 2) {
+        result = false;
+      }
+      
       SB_APPEND_CSTR(&sb, "\x48\x81\xc3"); // addq $imm32, %rbx
       uint32_t operand = (uint32_t)op.operand;
       DA_APPEND_MANY(&sb, &operand, sizeof(operand));
