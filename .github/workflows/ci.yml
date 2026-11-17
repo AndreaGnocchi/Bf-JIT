@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: ${{ matrix.cc }} / ${{ matrix.target }}
+    # The JIT emits x86-64 machine code, so this must run on an x86-64 runner.
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cc: [gcc, clang]
+        target: [test, test-ubsan]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: |
+          uname -m
+          ${{ matrix.cc }} --version
+          make --version | head -n 1
+
+      - name: Build
+        run: make CC=${{ matrix.cc }}
+
+      - name: Run ${{ matrix.target }}
+        run: make CC=${{ matrix.cc }} ${{ matrix.target }}
