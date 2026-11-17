@@ -36,4 +36,7 @@ static inline bool write_temp_file(const char* content, char* path, size_t path_
   return ok;
 }
 
+// ir.c & ir.h
+void run_all_ir_tests(void);
+
 #endif // TEST_MAIN_H
