@@ -42,5 +42,7 @@ void run_all_utils_tests(void);
 void run_all_lexer_tests(void);
 // ir.c & ir.h
 void run_all_ir_tests(void);
+// jit.c & jit.h
+void run_all_jit_tests(void);
 
 #endif // TEST_MAIN_H

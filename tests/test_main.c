@@ -7,6 +7,7 @@ static inline void run_all_tests(void) {
   run_all_utils_tests();
   run_all_lexer_tests();
   run_all_ir_tests();
+  run_all_jit_tests();
 }
 
 int main(void) {
