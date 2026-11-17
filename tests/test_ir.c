@@ -24,7 +24,7 @@ static inline void test_empty_and_comments(void) {
   CHECK(ops.count == 0);
   free(ops.items);
 
-  CHECK(parse("just a comment, no commands", &ops));
+  CHECK(parse("just a comment no commands", &ops));
   CHECK(ops.count == 0);
   free(ops.items);
 }
@@ -138,7 +138,7 @@ static inline void test_clear_optimization(void) {
   free(ops.items);
 
   CHECK(parse("+[>-]", &ops));
-  CHECK(ops.count == 4);
+  CHECK(ops.count == 5);
   CHECK(ops.items[1].kind == OP_JUMP_IF_ZERO);
   free(ops.items);
 }
