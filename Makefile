@@ -1,5 +1,5 @@
 # Compiler and archiving tools
-CC     := gcc
+CC     := clang
 CFLAGS  = -Wall -Wextra -O2 -fPIE -MMD -MP
 
 # Directories
@@ -56,7 +56,8 @@ $(TEST_BIN): $(TEST_SRCS) $(TEST_HDRS) $(OBJS)
 test: $(TEST_BIN)
 	./$(TEST_BIN)
 
-SAN_UB = -fsanitize=undefined -fno-sanitize-recover=all -fno-omit-frame-pointer -g
+NO_SAN_FN = $(shell echo 'int main(void){return 0;}' | $(CC) -x c -c -o /dev/null -fsanitize=undefined -fno-sanitize=function - 2>/dev/null && echo -fno-sanitize=function)
+SAN_UB    = -fsanitize=undefined $(NO_SAN_FN) -fno-sanitize-recover=all -fno-omit-frame-pointer -g
 
 test-ubsan:
 	$(MAKE) BUILD_DIR=build-ubsan CFLAGS="$(CFLAGS) $(SAN_UB)" TEST_CFLAGS="$(TEST_CFLAGS) $(SAN_UB)" test
